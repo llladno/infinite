@@ -1,48 +1,52 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import axios from "axios";
-import {Simulate} from "react-dom/test-utils";
-import resize = Simulate.resize;
+import {useDispatch} from "react-redux";
 
 const UserList = () => {
-    const [users, setUsers] = useState([]);
-    const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(true);
-    const [fetching, setFetching] = useState(false);
-    async function query (){
+    const [users, setUsers] = useState<any>([]);
+    const [page, setPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
+    const dispatch = useDispatch();
+    const eleme = useRef<any>(null)
+
+    useEffect(()=>{
         if(fetching){
             axios.get(`https://f0cfd85b77b7aa3b.mokky.dev/user?page=${page}&limit=20`).then((result)=>{
-                setUsers(result.data.items)
-                setLoading(false)
+                setUsers([...users,...result.data.items])
+                setPage(prevState => prevState+1)
+            }).finally(()=>{
+                setFetching(false)
             })
         }
-    }
-    useEffect(()=>{
-        query()
-        console.log(users)
-        document.addEventListener('scroll', scrollHandler)
-        return function (){
-            document.removeEventListener('scroll', scrollHandler)
-        }
     },[fetching])
+    useEffect(()=>{
+            eleme.current.addEventListener('scroll', scrollHandler)
+        return function (){
+            eleme.current.removeEventListener('scroll', scrollHandler)
+        }
+    },[])
 
     function scrollHandler(e: any) {
-        console.log(e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight) )
-        if (e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight) < 100) {
+        if (e.target.scrollHeight - (e.target.scrollTop + window.innerHeight) < 100) {
             setFetching(true)
-            console.log('work')
-            console.log("page", page)
-            setPage(page + 1)
-            query()
         }
     }
 
 
+    function inputHandler(event: any) {
+
+        event.target.value ? axios.get(`https://f0cfd85b77b7aa3b.mokky.dev/user?name=*${event.target.value}*`)
+            .then(res => setUsers(res.data))
+            : axios.get('https://f0cfd85b77b7aa3b.mokky.dev/user').then(res => setUsers(res.data))
+    }
     return (
-        <div>
+        <div className='userList' ref={eleme}>
+            <input className='inputList' onChange={inputHandler}/>
             {!loading ? users.map((user:any) => {
                 return (
-                    <div key={user.id}>
-                        <h2>{user.id} {user.name}</h2>
+                    <div key={user.id} className='userPoint' onClick={()=> dispatch({type: 'SUCCESS', payload: user})}>
+                        <img src='/assets/user.png' width='25px' height='25px'></img><h2>{user.id}. {user.name}</h2>
                     </div>
                 );
             }) : <div>loading</div>}
