@@ -12,15 +12,14 @@ const UserList = () => {
 
     useEffect(()=>{
         if(fetching){
-            axios.get(`https://f0cfd85b77b7aa3b.mokky.dev/usser?page=${page}&limit=20`).then((result)=>{
+            axios.get(`https://f0cfd85b77b7aa3b.mokky.dev/user?page=${page+1}&limit=20`).then((result)=>{
                 setUsers([...users,...result.data.items])
-                setPage(prevState => prevState+1)
+                setPage(page+1)
             }).catch((e)=>{
               if (e){
-                  console.log("ERROR")
-                  axios.get('/data/data.json').then((res)=>{
-                      setUsers([...users,...res.data.slice(20*(page-1), (20*(page-1))+20)])
-                      setPage(prevState => prevState+1)
+                  axios.get('./data/data.json').then((res)=>{
+                      setUsers([...users,...res.data.slice(20*(page), (20*(page))+20)])
+                      setPage(page +1)
 
                   })
               }
