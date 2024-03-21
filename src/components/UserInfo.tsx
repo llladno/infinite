@@ -41,7 +41,7 @@ const UserInfo = () => {
             {user.id ? <div>
                     <h1>{user.id}. {user.name}</h1>
                     <div className='user'>
-                        <img src='/assets/user.png' width='100px' height='100px'></img>
+                        <img src='./assets/user.png' width='100px' height='100px'></img>
                         <form className='formGrid' onSubmit={handleSubmit}>
                             <h4>Имя</h4>
                             <input name='name' placeholder={user.name}/>

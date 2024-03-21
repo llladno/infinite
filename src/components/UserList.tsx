@@ -54,7 +54,7 @@ const UserList = () => {
             {!loading ? users.map((user:any) => {
                 return (
                     <div key={user.id} className='userPoint' onClick={()=> dispatch({type: 'SUCCESS', payload: user})}>
-                        <img src='/assets/user.png' width='25px' height='25px'></img><h2>{user.id}. {user.name}</h2>
+                        <img src='./assets/user.png' width='25px' height='25px'></img><h2>{user.id}. {user.name}</h2>
                     </div>
                 );
             }) : <div>loading</div>}
